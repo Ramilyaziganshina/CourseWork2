@@ -10,12 +10,6 @@ import java.util.*;
 public class JavaQuestionService implements QuestionService {
     private Set<Question> questions = new LinkedHashSet<>();
 
-    private final Random random;
-
-    public JavaQuestionService(Random random) {
-        this.random = random;
-    }
-
     @Override
     public Question add(String question, String answer) {
         Question newQuestion = new Question(question, answer);
@@ -48,6 +42,7 @@ public class JavaQuestionService implements QuestionService {
     @Override
     public Question getRandomQuestion() {
         List<Question> questionList = new ArrayList<>(questions);
+        Random random = new Random();
         return questionList.get(random.nextInt(questionList.size()));
     }
 }

@@ -1,6 +1,7 @@
 package com.example.examtickets.services;
 
 import com.example.examtickets.entities.Question;
+import com.example.examtickets.exceptions.QuestionNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ContextConfiguration(classes = {JavaQuestionService.class})
 @ExtendWith(SpringExtension.class)
@@ -29,6 +31,8 @@ class JavaQuestionServiceTest {
         Question actualQuestion = questionService.add(question, answer);
 
         assertEquals(expectedQuestion, actualQuestion);
+
+        questionService.remove(question, answer);
     }
 
     @Test
@@ -38,9 +42,25 @@ class JavaQuestionServiceTest {
 
         Question expectedQuestion = new Question(question, answer);
 
+        questionService.add(question, answer);
         Question actualQuestion = questionService.remove(question, answer);
 
         assertEquals(expectedQuestion, actualQuestion);
+    }
+
+    @Test
+    void remove_questionNotFoundException() {
+        String expectedMessage = "Такой билет не найден";
+        String question = "1";
+        String answer = "11";
+
+        Exception exception = assertThrows(QuestionNotFoundException.class,
+                () -> {
+                    questionService.remove(question, answer);
+                }
+        );
+
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
     @Test
@@ -51,8 +71,13 @@ class JavaQuestionServiceTest {
 
         Collection<Question> expectedQuestions = questions;
 
+        questionService.add(q1);
+        questionService.add(q2);
         Collection<Question> actualQuestions = questionService.getAll();
 
         assertEquals(expectedQuestions, actualQuestions);
+
+        questionService.remove("1", "11");
+        questionService.remove("2", "22");
     }
 }
